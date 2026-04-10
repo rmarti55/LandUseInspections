@@ -2,7 +2,7 @@
 *.db
 *.db-wal
 *.db-shm
-exports/
+scraper/exports/
 
 # Python
 __pycache__/
@@ -12,9 +12,9 @@ __pycache__/
 venv/
 
 # Node / Next.js
-dashboard/node_modules/
-dashboard/.next/
-dashboard/out/
+node_modules/
+.next/
+out/
 
 # OS
 .DS_Store
@@ -25,4 +25,4 @@ Thumbs.db
 .idea/
 
 # Generated data for dashboard
-dashboard/public/data/
+public/data/

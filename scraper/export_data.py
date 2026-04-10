@@ -16,7 +16,7 @@ from collections import defaultdict
 from config import DB_PATH
 from models import get_connection
 
-OUT_DIR = os.path.join("dashboard", "public", "data")
+OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "public", "data")
 
 
 def export_summary(conn: sqlite3.Connection) -> dict:
