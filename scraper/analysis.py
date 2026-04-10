@@ -86,21 +86,34 @@ def query_permits(conn: sqlite3.Connection, limit: int = 25) -> None:
 
 
 def query_top_builders(conn: sqlite3.Connection, limit: int = 20) -> None:
-    """Who is building the most?"""
+    """Contractors and owner-builders only (matches export_builders)."""
     print(f"\n=== Top Builders (by permit count, limit {limit}) ===\n")
     cur = conn.execute("""
         SELECT
-            COALESCE(
-                NULLIF(TRIM(company), ''),
-                NULLIF(TRIM(first_name || ' ' || last_name), ''),
-                'Unknown'
-            ) AS builder,
-            contact_type,
-            COUNT(DISTINCT case_id) AS num_permits
-        FROM contacts
-        WHERE case_module = 'Permit'
-          AND COALESCE(NULLIF(TRIM(company),''), NULLIF(TRIM(first_name||' '||last_name),'')) IS NOT NULL
-        GROUP BY builder
+            MIN(x.raw_name) AS builder,
+            MIN(x.contact_type) AS contact_type,
+            COUNT(DISTINCT x.case_id) AS num_permits
+        FROM (
+            SELECT
+                c.case_id,
+                c.contact_type,
+                COALESCE(
+                    NULLIF(TRIM(c.company), ''),
+                    NULLIF(TRIM(c.first_name || ' ' || c.last_name), ''),
+                    'Unknown'
+                ) AS raw_name,
+                UPPER(TRIM(COALESCE(
+                    NULLIF(TRIM(c.company), ''),
+                    NULLIF(TRIM(c.first_name || ' ' || c.last_name), ''),
+                    'Unknown'
+                ))) AS name_key
+            FROM contacts c
+            WHERE c.case_module = 'Permit'
+              AND c.contact_type IN ('Contractor', 'Property Owner/Builder')
+              AND COALESCE(NULLIF(TRIM(c.company), ''),
+                           NULLIF(TRIM(c.first_name || ' ' || c.last_name), '')) IS NOT NULL
+        ) x
+        GROUP BY x.name_key
         ORDER BY num_permits DESC
         LIMIT ?
     """, (limit,))
@@ -109,8 +122,8 @@ def query_top_builders(conn: sqlite3.Connection, limit: int = 20) -> None:
         print("  No contact data found.")
         return
     for i, r in enumerate(rows, 1):
-        print(f"  {i:>3d}. {r['builder'] or 'Unknown':<40s} "
-              f"{r['num_permits']:>5d} permits")
+        print(f"  {i:>3d}. {r['builder'] or 'Unknown':<36s} "
+              f"{(r['contact_type'] or ''):<28s} {r['num_permits']:>5d} permits")
 
 
 def query_permit_types(conn: sqlite3.Connection) -> None:

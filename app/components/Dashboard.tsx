@@ -11,6 +11,7 @@ import FeesSummaryChart from "./FeesSummary";
 import type {
   Summary,
   Permit,
+  PermitContacts,
   TimelinePoint,
   Builder,
   StatusCount,
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const [tab, setTab] = useState<TabId>("overview");
   const [summary, setSummary] = useState<Summary | null>(null);
   const [permits, setPermits] = useState<Permit[]>([]);
+  const [permitContacts, setPermitContacts] = useState<PermitContacts>({});
   const [permitsTimeline, setPermitsTimeline] = useState<TimelinePoint[]>([]);
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [inspStatus, setInspStatus] = useState<StatusCount[]>([]);
@@ -49,6 +51,7 @@ export default function Dashboard() {
   useEffect(() => {
     load<Summary>("summary").then(setSummary);
     load<Permit[]>("permits").then(setPermits);
+    load<PermitContacts>("permit_contacts").then(setPermitContacts);
     load<TimelinePoint[]>("permits_timeline").then(setPermitsTimeline);
     load<Builder[]>("builders").then(setBuilders);
     load<StatusCount[]>("inspection_status").then(setInspStatus);
@@ -97,7 +100,9 @@ export default function Dashboard() {
               </>
             )}
             {tab === "map" && <PermitMap permits={permits} />}
-            {tab === "permits" && <PermitsTable permits={permits} />}
+            {tab === "permits" && (
+              <PermitsTable permits={permits} contacts={permitContacts} />
+            )}
             {tab === "builders" && <BuildersChart builders={builders} />}
             {tab === "trends" && (
               <TrendsCharts timeline={permitsTimeline} types={permitTypes} />

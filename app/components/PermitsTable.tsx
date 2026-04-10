@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Permit } from "../types";
+import type { Permit, PermitContacts } from "../types";
 
 const PAGE_SIZE = 25;
 
@@ -15,7 +15,29 @@ function fmtMoney(n: number | null): string {
   return `$${n.toLocaleString()}`;
 }
 
-export default function PermitsTable({ permits }: { permits: Permit[] }) {
+function contactLabel(c: {
+  first_name: string;
+  last_name: string;
+  company: string;
+  contact_type: string;
+}): string {
+  const name =
+    c.company?.trim() ||
+    `${c.first_name || ""} ${c.last_name || ""}`.trim() ||
+    "";
+  const type = c.contact_type?.trim();
+  if (type && name) return `${type}: ${name}`;
+  if (type) return type;
+  return name || "";
+}
+
+export default function PermitsTable({
+  permits,
+  contacts,
+}: {
+  permits: Permit[];
+  contacts: PermitContacts;
+}) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<keyof Permit>("apply_date");
   const [sortAsc, setSortAsc] = useState(false);
@@ -96,7 +118,20 @@ export default function PermitsTable({ permits }: { permits: Permit[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 text-left text-gray-500">
-              {cols.map((c) => (
+              {cols.slice(0, 4).map((c) => (
+                <th
+                  key={c.key}
+                  onClick={() => toggleSort(c.key)}
+                  className={`px-3 py-2 font-medium cursor-pointer hover:text-gray-900 whitespace-nowrap ${c.cls || ""}`}
+                >
+                  {c.label}
+                  {arrow(c.key)}
+                </th>
+              ))}
+              <th className="px-3 py-2 font-medium text-left text-gray-500 whitespace-nowrap">
+                Contacts
+              </th>
+              {cols.slice(4).map((c) => (
                 <th
                   key={c.key}
                   onClick={() => toggleSort(c.key)}
@@ -132,6 +167,19 @@ export default function PermitsTable({ permits }: { permits: Permit[] }) {
                   </span>
                 </td>
                 <td className="px-3 py-2 max-w-[220px] truncate">{p.address}</td>
+                <td className="px-3 py-2 max-w-[260px] align-top text-gray-700">
+                  <ul className="space-y-0.5 text-xs">
+                    {(contacts[p.permit_id] ?? []).map((c, i) => {
+                      const line = contactLabel(c);
+                      if (!line) return null;
+                      return (
+                        <li key={i} className="truncate" title={line}>
+                          {line}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </td>
                 <td className="px-3 py-2 text-right whitespace-nowrap">
                   {fmtMoney(p.valuation)}
                 </td>
@@ -141,7 +189,7 @@ export default function PermitsTable({ permits }: { permits: Permit[] }) {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-gray-400">
+                <td colSpan={8} className="px-3 py-8 text-center text-gray-400">
                   {permits.length === 0
                     ? "No permit data yet — run the scraper first"
                     : "No results match your search"}

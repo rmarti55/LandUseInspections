@@ -66,26 +66,62 @@ def export_permits_timeline(conn: sqlite3.Connection) -> list[dict]:
 
 
 def export_builders(conn: sqlite3.Connection) -> list[dict]:
+    """Contractors and owner-builders only; names merged by case-insensitive key."""
     rows = conn.execute("""
         SELECT
-            COALESCE(
-                NULLIF(TRIM(company), ''),
-                NULLIF(TRIM(first_name || ' ' || last_name), ''),
-                'Unknown'
-            ) AS name,
-            contact_type AS role,
-            COUNT(DISTINCT case_id) AS permit_count,
-            COALESCE(SUM(p.valuation), 0) AS total_valuation
-        FROM contacts c
-        LEFT JOIN permits p ON c.case_id = p.permit_id
-        WHERE c.case_module = 'Permit'
-          AND COALESCE(NULLIF(TRIM(c.company),''),
-                       NULLIF(TRIM(c.first_name||' '||c.last_name),'')) IS NOT NULL
-        GROUP BY name
+            MIN(x.raw_name) AS name,
+            MIN(x.contact_type) AS role,
+            COUNT(DISTINCT x.case_id) AS permit_count,
+            COALESCE(SUM(x.valuation), 0) AS total_valuation
+        FROM (
+            SELECT
+                c.case_id,
+                c.contact_type,
+                COALESCE(
+                    NULLIF(TRIM(c.company), ''),
+                    NULLIF(TRIM(c.first_name || ' ' || c.last_name), ''),
+                    'Unknown'
+                ) AS raw_name,
+                UPPER(TRIM(COALESCE(
+                    NULLIF(TRIM(c.company), ''),
+                    NULLIF(TRIM(c.first_name || ' ' || c.last_name), ''),
+                    'Unknown'
+                ))) AS name_key,
+                p.valuation
+            FROM contacts c
+            LEFT JOIN permits p ON c.case_id = p.permit_id
+            WHERE c.case_module = 'Permit'
+              AND c.contact_type IN ('Contractor', 'Property Owner/Builder')
+              AND COALESCE(NULLIF(TRIM(c.company), ''),
+                           NULLIF(TRIM(c.first_name || ' ' || c.last_name), '')) IS NOT NULL
+        ) x
+        GROUP BY x.name_key
         ORDER BY permit_count DESC
         LIMIT 50
     """).fetchall()
     return [dict(r) for r in rows]
+
+
+def export_permit_contacts(conn: sqlite3.Connection) -> dict[str, list[dict]]:
+    """Map permit_id -> list of contact rows for dashboard permits table."""
+    rows = conn.execute("""
+        SELECT case_id, first_name, last_name, company, contact_type
+        FROM contacts
+        WHERE case_module = 'Permit' AND case_id IS NOT NULL
+        ORDER BY case_id, contact_id
+    """).fetchall()
+    by_permit: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        cid = r["case_id"]
+        if not cid:
+            continue
+        by_permit[str(cid)].append({
+            "first_name": r["first_name"] or "",
+            "last_name": r["last_name"] or "",
+            "company": r["company"] or "",
+            "contact_type": r["contact_type"] or "",
+        })
+    return dict(by_permit)
 
 
 def export_inspection_status(conn: sqlite3.Connection) -> list[dict]:
@@ -163,6 +199,7 @@ def main():
     write_json("permits", export_permits(conn))
     write_json("permits_timeline", export_permits_timeline(conn))
     write_json("builders", export_builders(conn))
+    write_json("permit_contacts", export_permit_contacts(conn))
     write_json("inspection_status", export_inspection_status(conn))
     write_json("inspection_timeline", export_inspection_timeline(conn))
     write_json("fees_summary", export_fees_summary(conn))

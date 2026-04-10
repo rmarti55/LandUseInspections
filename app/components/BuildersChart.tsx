@@ -46,15 +46,17 @@ export default function BuildersChart({ builders }: { builders: Builder[] }) {
                 <tr className="border-b border-gray-200 text-left text-gray-500">
                   <th className="px-3 py-2 font-medium">#</th>
                   <th className="px-3 py-2 font-medium">Name</th>
+                  <th className="px-3 py-2 font-medium">Role</th>
                   <th className="px-3 py-2 font-medium text-right">Permits</th>
                   <th className="px-3 py-2 font-medium text-right">Total Valuation</th>
                 </tr>
               </thead>
               <tbody>
                 {top20.map((b, i) => (
-                  <tr key={b.name} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={`${b.name}-${i}`} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-3 py-2 text-gray-400">{i + 1}</td>
                     <td className="px-3 py-2 font-medium">{b.name}</td>
+                    <td className="px-3 py-2 text-gray-600">{b.role || "—"}</td>
                     <td className="px-3 py-2 text-right">{b.permit_count}</td>
                     <td className="px-3 py-2 text-right">
                       {b.total_valuation

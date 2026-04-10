@@ -7,6 +7,15 @@ export interface Summary {
   passRate: number;
 }
 
+export interface Contact {
+  first_name: string;
+  last_name: string;
+  company: string;
+  contact_type: string;
+}
+
+export type PermitContacts = Record<string, Contact[]>;
+
 export interface Permit {
   permit_id: string;
   permit_number: string;
