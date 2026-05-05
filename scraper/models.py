@@ -145,6 +145,19 @@ def init_db(db_path: str = DB_PATH) -> None:
     CREATE INDEX IF NOT EXISTS idx_inspections_case ON inspections(case_number);
     CREATE INDEX IF NOT EXISTS idx_fees_case ON fees(case_id);
     CREATE INDEX IF NOT EXISTS idx_contacts_case ON contacts(case_id);
+
+    CREATE TABLE IF NOT EXISTS scraped_calendar_days (
+        day         TEXT PRIMARY KEY,
+        scraped_at  TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Sub-record enrichment completed for (entity, module); avoids duplicate fee/contact rows on resume
+    CREATE TABLE IF NOT EXISTS enrichment_log (
+        entity_id    TEXT NOT NULL,
+        case_module  TEXT NOT NULL,
+        enriched_at  TEXT DEFAULT (datetime('now')),
+        PRIMARY KEY (entity_id, case_module)
+    );
     """)
 
     conn.commit()

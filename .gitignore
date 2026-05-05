@@ -24,5 +24,10 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Secrets (Neon / Vercel env pull)
+.env
+.env.*
+!.env.example
+
 # Generated data for dashboard (committed so Vercel can serve it)
 # public/data/

@@ -50,48 +50,6 @@ def _infer_sector_from_text(tl: str) -> Sector:
     return "unknown"
 
 
-def _infer_kind_heuristic(tl: str, wl: str) -> PermitKind:
-    if "trade permit" in tl or "gastrade" in tl:
-        return "trade"
-    if re.search(r"\badditional\b.*\b(plumbing|mechanical)\b", tl):
-        return "trade"
-    if "certificate of compliance" in tl or wl == "certificate of compliance":
-        return "compliance"
-    if "grading and drainage" in tl:
-        return "site_civil"
-    if "landscape and utilities" in tl:
-        return "site_civil"
-    if "solar" in tl and "electric" in tl:
-        return "other"
-    if "re-roof" in tl or "reroof" in tl:
-        return "other"
-    if any(
-        x in tl
-        for x in (
-            "new commercial building",
-            "new multi-family",
-            "new multi family",
-            "dwelling unit",
-            "additions",
-            "addition",
-            "alterations",
-            "remodel",
-            "building (residential)",
-            "garage or carport",
-            "garage and carport",
-        )
-    ):
-        return "construction"
-    if tl.startswith("new ") and "building" in tl:
-        return "construction"
-    # work_class hints when type is vague
-    trade_classes = ("electrical", "plumbing", "plumbing/gas", "mechanical", "gas")
-    if wl in trade_classes or any(c in wl for c in ("electrical", "plumbing", "mechanical")):
-        if "trade" in tl or "permit" in tl:
-            return "trade"
-    return "unknown"
-
-
 def classify_permit(
     permit_type: str | None,
     work_class: str | None,
@@ -107,27 +65,45 @@ def classify_permit(
     tl = t.lower()
     wl = w.lower()
 
-    kind = _infer_kind_heuristic(tl, wl)
+    if (
+        "trade permit" in tl
+        or "gastrade" in tl
+        or re.search(r"\badditional\b.*\b(plumbing|mechanical)\b", tl)
+    ):
+        return (_infer_sector_from_text(tl), "trade")
 
-    if kind == "trade":
-        sec = _infer_sector_from_text(tl)
-        return (sec, "trade")
+    if "certificate of compliance" in tl or wl == "certificate of compliance":
+        return (_infer_sector_from_text(tl), "compliance")
 
-    if kind in ("compliance", "site_civil", "other"):
-        sec = _infer_sector_from_text(tl)
-        if sec == "unknown" and kind == "other" and ("residential" in tl or "commercial" in tl):
-            sec = _infer_sector_from_text(tl)
-        return (sec if sec != "unknown" else _infer_sector_from_text(tl), kind)
+    if "grading and drainage" in tl:
+        return (_infer_sector_from_text(tl), "site_civil")
 
-    if kind == "construction":
-        sec = _infer_sector_from_text(tl)
-        return (sec, "construction")
+    if "landscape and utilities" in tl:
+        return (_infer_sector_from_text(tl), "site_civil")
 
-    # Remaining: try sector from text, then kind from work_class
-    sec = _infer_sector_from_text(tl)
-    if kind == "unknown":
-        kind = _infer_kind_heuristic(tl, wl)
-    if kind == "unknown" and wl:
-        if any(x in wl for x in ("electrical", "plumbing", "mechanical", "gas")):
-            kind = "trade"
-    return (sec, kind)
+    if "solar" in tl and "electric" in tl:
+        return (_infer_sector_from_text(tl), "other")
+
+    if "re-roof" in tl or "reroof" in tl:
+        return (_infer_sector_from_text(tl), "other")
+
+    construction_markers = (
+        "new commercial building",
+        "new multi-family",
+        "new multi family",
+        "dwelling unit",
+        "additions",
+        "alteration",
+        "remodel",
+        "building (residential)",
+        "garage or carport",
+        "garage and carport",
+        "single family detached",
+        "other remodel",
+    )
+    if any(p in tl for p in construction_markers) or (
+        tl.startswith("new ") and "building" in tl
+    ):
+        return (_infer_sector_from_text(tl), "construction")
+
+    return (_infer_sector_from_text(tl), "unknown")

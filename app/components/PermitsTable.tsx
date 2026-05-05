@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import type { Permit, PermitContacts } from "../types";
+import { isCertificateOfCompliance } from "../lib/permitKind";
+import CocFilterToggle from "./CocFilterToggle";
 
 const PAGE_SIZE = 25;
 
@@ -34,27 +36,44 @@ function contactLabel(c: {
 export default function PermitsTable({
   permits,
   contacts,
+  cocOnly,
+  onCocOnlyChange,
 }: {
   permits: Permit[];
   contacts: PermitContacts;
+  cocOnly: boolean;
+  onCocOnlyChange: (value: boolean) => void;
 }) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<keyof Permit>("apply_date");
   const [sortAsc, setSortAsc] = useState(false);
   const [page, setPage] = useState(0);
 
+  const pool = useMemo(
+    () =>
+      cocOnly ? permits.filter(isCertificateOfCompliance) : permits,
+    [permits, cocOnly]
+  );
+
+  useEffect(() => {
+    setPage(0);
+  }, [cocOnly]);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return permits.filter(
+    return pool.filter(
       (p) =>
         !q ||
         p.permit_number?.toLowerCase().includes(q) ||
         p.permit_type?.toLowerCase().includes(q) ||
+        p.work_class?.toLowerCase().includes(q) ||
+        p.sector?.toLowerCase().includes(q) ||
+        p.permit_kind?.toLowerCase().includes(q) ||
         p.address?.toLowerCase().includes(q) ||
         p.status?.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q)
     );
-  }, [permits, search]);
+  }, [pool, search]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -83,6 +102,7 @@ export default function PermitsTable({
   const cols: { key: keyof Permit; label: string; cls?: string }[] = [
     { key: "permit_number", label: "Permit #" },
     { key: "permit_type", label: "Type" },
+    { key: "work_class", label: "Work class" },
     { key: "status", label: "Status" },
     { key: "address", label: "Address" },
     { key: "valuation", label: "Valuation", cls: "text-right" },
@@ -95,11 +115,19 @@ export default function PermitsTable({
 
   return (
     <div className="card">
+      <div className="mb-4">
+        <CocFilterToggle
+          id="permits-coc-filter"
+          cocOnly={cocOnly}
+          onCocOnlyChange={onCocOnlyChange}
+        />
+      </div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h2 className="text-lg font-semibold">
           Permits{" "}
           <span className="text-sm font-normal text-gray-500">
-            ({filtered.length.toLocaleString()})
+            ({filtered.length.toLocaleString()}
+            {cocOnly ? ` of ${pool.length.toLocaleString()} COC` : ""})
           </span>
         </h2>
         <input
@@ -118,7 +146,7 @@ export default function PermitsTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 text-left text-gray-500">
-              {cols.slice(0, 4).map((c) => (
+              {cols.slice(0, 5).map((c) => (
                 <th
                   key={c.key}
                   onClick={() => toggleSort(c.key)}
@@ -131,7 +159,7 @@ export default function PermitsTable({
               <th className="px-3 py-2 font-medium text-left text-gray-500 whitespace-nowrap">
                 Contacts
               </th>
-              {cols.slice(4).map((c) => (
+              {cols.slice(5).map((c) => (
                 <th
                   key={c.key}
                   onClick={() => toggleSort(c.key)}
@@ -151,6 +179,9 @@ export default function PermitsTable({
               >
                 <td className="px-3 py-2 font-mono text-xs">{p.permit_number}</td>
                 <td className="px-3 py-2 max-w-[200px] truncate">{p.permit_type}</td>
+                <td className="px-3 py-2 max-w-[120px] truncate text-gray-600 text-xs">
+                  {p.work_class}
+                </td>
                 <td className="px-3 py-2">
                   <span
                     className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -189,10 +220,14 @@ export default function PermitsTable({
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-3 py-8 text-center text-gray-400">
+                <td colSpan={9} className="px-3 py-8 text-center text-gray-400">
                   {permits.length === 0
                     ? "No permit data yet — run the scraper first"
-                    : "No results match your search"}
+                    : cocOnly && pool.length === 0
+                      ? "No Certificate of Compliance permits in this dataset."
+                      : filtered.length === 0
+                        ? "No results match your search"
+                        : "No rows on this page."}
                 </td>
               </tr>
             )}

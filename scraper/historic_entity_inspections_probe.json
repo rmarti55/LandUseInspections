@@ -1,0 +1,10 @@
+{
+  "probe_summary": {
+    "permits_probed": 50,
+    "historic_required": 0,
+    "no_inspections_pending": 9,
+    "non_historic_pending": 41,
+    "errors": 0
+  },
+  "historic_required_permits": []
+}

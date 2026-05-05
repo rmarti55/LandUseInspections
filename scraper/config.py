@@ -1,3 +1,5 @@
+import os
+
 BASE_URL = "https://santafenm-energovpub.tylerhost.net/apps/selfservice"
 TENANT_NAME = "SantaFeNMProd"
 TENANT_ID = 1
@@ -15,7 +17,8 @@ PAGE_SIZE = 100
 REQUEST_DELAY_SECONDS = 1.5
 DEFAULT_SCRAPE_DAYS = 365
 
-DB_PATH = "santa_fe_land_use.db"
+_SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(_SCRAPER_DIR, "santa_fe_land_use.db")
 
 
 def to_energov_date(iso_date: str) -> str:

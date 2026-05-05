@@ -1,0 +1,825 @@
+{
+  "total_permits": 12584,
+  "historic_candidates": 30,
+  "tier_breakdown": {
+    "candidate": 12,
+    "approved": 10,
+    "not_required": 2,
+    "inspection_required": 6
+  },
+  "permit_type_breakdown": {
+    "Special Inspections": 8,
+    "Residential Express- Re-roof": 7,
+    "Residential Express- Window/Door Replacement": 3,
+    "Certificate of Compliance": 3,
+    "Commercial Express- Re-roof": 2,
+    "Residential Wall": 1,
+    "Commercial Electrical Trade Permit": 1,
+    "Alterations with Exterior Changes to Residential Accessory Structure": 1,
+    "Residential Fence": 1,
+    "Alterations with Exterior Changes to Single Family Detached Dwelling": 1,
+    "Other Remodel with Exterior Changes to Commercial Building": 1,
+    "Other Interior Remodel to Commercial Building": 1
+  },
+  "address_groups": [
+    {
+      "normalized_address": "1000 CANYON RD",
+      "permit_count": 1,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2025-44305-EXTR"
+      ]
+    },
+    {
+      "normalized_address": "1155 CAMINO DELORA",
+      "permit_count": 2,
+      "tiers": [
+        "inspection_required"
+      ],
+      "permit_numbers": [
+        "2025-45954-IESI",
+        "2025-43656-IESI"
+      ]
+    },
+    {
+      "normalized_address": "123 GRANT AVE",
+      "permit_count": 2,
+      "tiers": [
+        "inspection_required",
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2024-38433-BLDC",
+        "2021-17437-IESI"
+      ]
+    },
+    {
+      "normalized_address": "1288 LEJANO LN",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2026-48880-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "1498 CERRO GORDO RD",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2025-43333-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "205 CANYON RD",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2025-42570-IESI"
+      ]
+    },
+    {
+      "normalized_address": "2099 CALLE NAVIDAD",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2022-20604-CERT"
+      ]
+    },
+    {
+      "normalized_address": "220 SHELBY ST",
+      "permit_count": 1,
+      "tiers": [
+        "not_required"
+      ],
+      "permit_numbers": [
+        "2021-16429-BLDC"
+      ]
+    },
+    {
+      "normalized_address": "248 RODRIGUEZ ST",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2025-42471-IESI"
+      ]
+    },
+    {
+      "normalized_address": "2833 PLAZA VERDE",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2021-17168-CERT"
+      ]
+    },
+    {
+      "normalized_address": "324 PASEO DE PERALTA",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2021-13779-EXPC"
+      ]
+    },
+    {
+      "normalized_address": "408 APODACA HILL",
+      "permit_count": 1,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2026-48180-WALR"
+      ]
+    },
+    {
+      "normalized_address": "411 CAMINO DON MIGUEL",
+      "permit_count": 1,
+      "tiers": [
+        "inspection_required"
+      ],
+      "permit_numbers": [
+        "2025-42313-IESI"
+      ]
+    },
+    {
+      "normalized_address": "433 SAN ANTONIO ST",
+      "permit_count": 2,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2025-43038-EXPR",
+        "2025-43035-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "439 CAMINO DEL MONTE SOL",
+      "permit_count": 1,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2024-39006-EXTR"
+      ]
+    },
+    {
+      "normalized_address": "459 CAMINO MANZANO",
+      "permit_count": 1,
+      "tiers": [
+        "inspection_required"
+      ],
+      "permit_numbers": [
+        "2021-15351-IESI"
+      ]
+    },
+    {
+      "normalized_address": "502 CAMINO SIN NOMBRE",
+      "permit_count": 1,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2025-45197-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "63 LINCOLN AVE",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2025-44418-CERT"
+      ]
+    },
+    {
+      "normalized_address": "644 DON GASPAR AVE",
+      "permit_count": 1,
+      "tiers": [
+        "not_required"
+      ],
+      "permit_numbers": [
+        "2025-47475-TRDC"
+      ]
+    },
+    {
+      "normalized_address": "701 E ALAMEDA ST",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2025-46741-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "750 N SAINT FRANCIS DR",
+      "permit_count": 1,
+      "tiers": [
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2021-17946-EXPC"
+      ]
+    },
+    {
+      "normalized_address": "800 CALLE RUMOLO",
+      "permit_count": 1,
+      "tiers": [
+        "inspection_required"
+      ],
+      "permit_numbers": [
+        "2021-15420-IESI"
+      ]
+    },
+    {
+      "normalized_address": "802 AGUA FRIA ST",
+      "permit_count": 3,
+      "tiers": [
+        "approved",
+        "candidate"
+      ],
+      "permit_numbers": [
+        "2025-43662-WALR",
+        "2025-43069-EXPR",
+        "2025-43068-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "836 DON CUBERO AVE",
+      "permit_count": 1,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2025-46733-EXPR"
+      ]
+    },
+    {
+      "normalized_address": "964 ACEQUIA MADRE",
+      "permit_count": 1,
+      "tiers": [
+        "approved"
+      ],
+      "permit_numbers": [
+        "2025-45747-EXPR"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "permit_id": "93df2d0d-74b5-49bd-904a-f727c1b13625",
+      "permit_number": "2026-48880-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Issued",
+      "address": "1288  LEJANO LN  \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2026-03-04",
+      "issue_date": "2026-03-10",
+      "complete_date": "",
+      "norm_address": "1288 LEJANO LN",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "Remove existing roofing system. Install a new roofing system with taper not visible from public right-of-way & maintaining the existing roof profile/height. Canales will be repaired or replaced in-kind necessary to improve water runoff, prevent moisture intrusion, without altering historic character",
+      "contact_match": false
+    },
+    {
+      "permit_id": "c37dd6fe-bbf6-4e44-af1c-24af9596faf0",
+      "permit_number": "2026-48180-WALR",
+      "permit_type": "Residential Wall",
+      "work_class": "Wall",
+      "status": "Complete",
+      "address": "408  APODACA HILL   \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2026-01-27",
+      "issue_date": "2026-02-12",
+      "complete_date": "",
+      "norm_address": "408 APODACA HILL",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "construct a CMU yard wall at front of property at maximum height of 57\" and coyote fence along the driveway to a maximum height of 57\", as per historic admin approval see attachment",
+      "contact_match": false
+    },
+    {
+      "permit_id": "bd05841e-3673-4847-8ea4-4c5cfb97286c",
+      "permit_number": "2025-47475-TRDC",
+      "permit_type": "Commercial Electrical Trade Permit",
+      "work_class": "Electrical",
+      "status": "Complete",
+      "address": "644 DON GASPAR AVE \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2025-12-17",
+      "issue_date": "2025-12-17",
+      "complete_date": "",
+      "norm_address": "644 DON GASPAR AVE",
+      "tier": "not_required",
+      "matched_fields": "description",
+      "reasons": "keyword:district,keyword:historic,approval_language",
+      "description_excerpt": "100314655-05 North Central New Mexico Economic Development District 644 Don Gaspar Ave, Santa Fe, NM 87505 Approval not needed from the Historic Department JCSS will install new QOLSYS Video Cameras at the NCNMEDD located at 644 Don Gaspar Ave. Santa Fe, NM 87505",
+      "contact_match": false
+    },
+    {
+      "permit_id": "b75bea83-35ce-412a-a8a1-195468ba2cca",
+      "permit_number": "2025-46741-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "701 E ALAMEDA ST  Unit/Suite: 2 \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2025-11-07",
+      "issue_date": "2025-11-18",
+      "complete_date": "",
+      "norm_address": "701 E ALAMEDA ST",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "Complete tear off, remove all existing roofs pumice etc. down to original deck. Remove and replace all Canales Painted to match existing. Install Tapered Rigid Insulation to Slope roof no less than 1/4\" per ft. to City Code all mechanically fastened with Screws and Plates. Install 60 Mil TPO (color ",
+      "contact_match": false
+    },
+    {
+      "permit_id": "6aa78983-9733-408d-9547-c3709cad75a1",
+      "permit_number": "2025-46733-EXPR",
+      "permit_type": "Residential Express- Window/Door Replacement",
+      "work_class": "Window/Door Replacement",
+      "status": "Complete",
+      "address": "836  DON CUBERO AVE  \r\nSanta Fe, New Mexico 87505",
+      "project_name": null,
+      "apply_date": "2025-11-07",
+      "issue_date": "2025-11-18",
+      "complete_date": "",
+      "norm_address": "836 DON CUBERO AVE",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "Removal of 6 windows already approved by Historic and the replacement of these windows.",
+      "contact_match": false
+    },
+    {
+      "permit_id": "64d47f56-9c83-4d16-9417-e64acc47c10b",
+      "permit_number": "2025-45954-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Issued",
+      "address": "1155 CAMINO DELORA \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2025-10-01",
+      "issue_date": "2025-10-01",
+      "complete_date": "",
+      "norm_address": "1155 CAMINO DELORA",
+      "tier": "inspection_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language,inspection_language",
+      "description_excerpt": "Re-stucco of property. Historic approval final inspection",
+      "contact_match": false
+    },
+    {
+      "permit_id": "8ffb48b4-cb58-474c-b283-e824fd403f8c",
+      "permit_number": "2025-45747-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "964  ACEQUIA MADRE   \r\nSanta Fe, New Mexico 87505",
+      "project_name": null,
+      "apply_date": "2025-09-23",
+      "issue_date": "2025-10-06",
+      "complete_date": "",
+      "norm_address": "964 ACEQUIA MADRE",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "Re-roof Scope of Work Remove the existing metal roof. Inspect the roof deck; if damaged, replace as needed. Remove a small section of the existing gravel roof and frame it for new metal roofing, consistent with the rest of the main house roof. Work applies only to the Main House; no work will be per",
+      "contact_match": false
+    },
+    {
+      "permit_id": "62e37208-5db0-43f2-b4b2-7019d7bcd622",
+      "permit_number": "2025-45197-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "502  CAMINO SIN NOMBRE   \r\nSanta Fe, New Mexico 87505",
+      "project_name": null,
+      "apply_date": "2025-08-25",
+      "issue_date": "2025-09-03",
+      "complete_date": "",
+      "norm_address": "502 CAMINO SIN NOMBRE",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,keyword:district,approval_language",
+      "description_excerpt": "Specifications: Install Gaco Western #3 Polyurethane Spray Foam & 100% Waterproof Silicone Coating with Five Star Energy Rating and 50 Year Life Expectancy to entire roof in color White or Santa Fe Tan. To existing Foam roof system of entire home at approximately 1,543 square feet, including vertica",
+      "contact_match": false
+    },
+    {
+      "permit_id": "3a366fd8-94d6-4ccf-a222-9640cd9a303b",
+      "permit_number": "2025-44418-CERT",
+      "permit_type": "Certificate of Compliance",
+      "work_class": "Certificate of Compliance",
+      "status": "Complete",
+      "address": "63 LINCOLN AVE \r\nSanta Fe, NM 87501",
+      "project_name": null,
+      "apply_date": "2025-07-21",
+      "issue_date": "2025-07-26",
+      "complete_date": "",
+      "norm_address": "63 LINCOLN AVE",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:heritage",
+      "description_excerpt": "Atrisco Heritage Foundation will be the Event Sponsor as the Operational Stewards for the Traditional Spanish Market July 26-27 2025.",
+      "contact_match": false
+    },
+    {
+      "permit_id": "e336a2f6-2003-4a7e-b8fd-1f8efebcdeda",
+      "permit_number": "2025-44305-EXTR",
+      "permit_type": "Alterations with Exterior Changes to Residential Accessory Structure",
+      "work_class": "Accessory Structure",
+      "status": "Complete",
+      "address": "1000 CANYON RD \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2025-07-14",
+      "issue_date": "2025-08-11",
+      "complete_date": "",
+      "norm_address": "1000 CANYON RD",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "INSTALL 36\"X36\" WINDOW INSTALL 36\"X6'8\" EXTERIOR DOOR STUCCO SHED WITH WALLIES AND MESH ALL THIS WORK HAS BEEN APPROVED BY HISTORICAL",
+      "contact_match": false
+    },
+    {
+      "permit_id": "325f1bc5-a862-473d-8b02-fc35ff9a6bb3",
+      "permit_number": "2025-43662-WALR",
+      "permit_type": "Residential Fence",
+      "work_class": "Fence",
+      "status": "Complete",
+      "address": "802  AGUA FRIA ST  \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2025-06-12",
+      "issue_date": "2025-07-11",
+      "complete_date": "",
+      "norm_address": "802 AGUA FRIA ST",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "Remove existing chain link fence & replace with new coyote fence per historical department requirements/specs",
+      "contact_match": false
+    },
+    {
+      "permit_id": "3818f990-5392-4fee-a06a-3ad2223ebae6",
+      "permit_number": "2025-43656-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Complete",
+      "address": "1155 CAMINO DELORA \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2025-06-12",
+      "issue_date": "",
+      "complete_date": "",
+      "norm_address": "1155 CAMINO DELORA",
+      "tier": "inspection_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,inspection_language",
+      "description_excerpt": "SPECIAL HISTORIC FINAL INSPECTION FOR EXTERIOR TRIM",
+      "contact_match": false
+    },
+    {
+      "permit_id": "9853b016-f91b-4560-b128-becbe2e2321b",
+      "permit_number": "2025-43333-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "1498  CERRO GORDO RD  \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2025-06-02",
+      "issue_date": "2025-06-13",
+      "complete_date": "",
+      "norm_address": "1498 CERRO GORDO RD",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "Re-roof entire residence of 1498 Cerro Gordo Rd (excluding Metal Roof and Carport) Complete tear off, remove all roofs (3) sections, remove all Pumice down to original deck. Remove and replace all Canales with Standard Wood Canales Lined with TPO Coating. Install tapered rigid insulation to Slope an",
+      "contact_match": false
+    },
+    {
+      "permit_id": "0a3f0519-4191-4494-abf2-f2d5d627b292",
+      "permit_number": "2025-43069-EXPR",
+      "permit_type": "Residential Express- Window/Door Replacement",
+      "work_class": "Window/Door Replacement",
+      "status": "Complete",
+      "address": "802  AGUA FRIA ST  \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2025-05-20",
+      "issue_date": "2025-06-04",
+      "complete_date": "",
+      "norm_address": "802 AGUA FRIA ST",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "Remove existing windows & install with new windows as per historical dept guidelines & specifications",
+      "contact_match": false
+    },
+    {
+      "permit_id": "5475795a-9535-45ae-8a93-77ccffec0fbf",
+      "permit_number": "2025-43068-EXPR",
+      "permit_type": "Residential Express- Window/Door Replacement",
+      "work_class": "Window/Door Replacement",
+      "status": "Complete",
+      "address": "802 AGUA FRIA ST Unit/Suite: A \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2025-05-20",
+      "issue_date": "2025-06-04",
+      "complete_date": "",
+      "norm_address": "802 AGUA FRIA ST",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "Remove existing window & replace with new window as per historical requirements/specifications",
+      "contact_match": false
+    },
+    {
+      "permit_id": "e9b24b4c-91dc-4737-95ca-c88b97316f55",
+      "permit_number": "2025-43038-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "433  SAN ANTONIO ST  Unit/Suite: 2 \r\nSanta Fe, New Mexico 87505",
+      "project_name": null,
+      "apply_date": "2025-05-16",
+      "issue_date": "2025-06-18",
+      "complete_date": "",
+      "norm_address": "433 SAN ANTONIO ST",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "Scope of Work: Complete roof tear-off, New 60 MIL. T.P.O. Roof General prep and procedures for work listed above as follows below. AS PER COMMUNICATIONS WITH HISTORIC SOCIATY: \u2022 There shall be no publicly visible rooftop appurtenances, no roofing material shall be on the top of the \u2022 parapets and sh",
+      "contact_match": false
+    },
+    {
+      "permit_id": "3c995ed8-6676-4e49-9862-424b8896fb0b",
+      "permit_number": "2025-43035-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "433  SAN ANTONIO ST  Unit/Suite: 1 \r\nSanta Fe, New Mexico 87505",
+      "project_name": null,
+      "apply_date": "2025-05-16",
+      "issue_date": "2025-06-18",
+      "complete_date": "",
+      "norm_address": "433 SAN ANTONIO ST",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "Scope of Work: Complete roof tear-off, New 60 MIL. T.P.O. Roof General prep and procedures for work listed above as follows below. AS PER COMMUNICATIONS WITH HISTORIC SOCIATY: \u2022 There shall be no publicly visible rooftop appurtenances, no roofing material shall be on the top of the \u2022 parapets and sh",
+      "contact_match": false
+    },
+    {
+      "permit_id": "8308475d-0ef9-4411-b8ad-4044cfed8a92",
+      "permit_number": "2025-42570-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Complete",
+      "address": "205 CANYON RD \r\nSanta Fe, NM 87501",
+      "project_name": null,
+      "apply_date": "2025-04-24",
+      "issue_date": "2025-04-28",
+      "complete_date": "",
+      "norm_address": "205 CANYON RD",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "REPLACE EXISTING FENCE AND PAINT FENCE WHITE IN HISTORIC AREA",
+      "contact_match": false
+    },
+    {
+      "permit_id": "0251a35b-bf44-4260-8e6c-a22edd5db582",
+      "permit_number": "2025-42471-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Complete",
+      "address": "248 RODRIGUEZ ST \r\nSanta Fe, NM 87501",
+      "project_name": null,
+      "apply_date": "2025-04-18",
+      "issue_date": "",
+      "complete_date": "",
+      "norm_address": "248 RODRIGUEZ ST",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "DEMO OF SHED AND BUILD OF A NEW ONE. HISTORIC",
+      "contact_match": false
+    },
+    {
+      "permit_id": "c379091b-6cf2-4bdd-a03f-580e073a80dc",
+      "permit_number": "2025-42313-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Issued",
+      "address": "411 CAMINO DON MIGUEL \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2025-04-11",
+      "issue_date": "2025-04-11",
+      "complete_date": "",
+      "norm_address": "411 CAMINO DON MIGUEL",
+      "tier": "inspection_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,keyword:preservation,inspection_language",
+      "description_excerpt": "EXISTING CONDITION STATUS FOR HISTORIC PRESERVATION",
+      "contact_match": false
+    },
+    {
+      "permit_id": "3414e3db-2c9f-4d91-bf56-e8c9923fc2c7",
+      "permit_number": "2024-39006-EXTR",
+      "permit_type": "Alterations with Exterior Changes to Single Family Detached Dwelling",
+      "work_class": "Single Family Detached",
+      "status": "Issued",
+      "address": "439 CAMINO DEL MONTE SOL \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2024-10-15",
+      "issue_date": "2024-11-01",
+      "complete_date": "",
+      "norm_address": "439 CAMINO DEL MONTE SOL",
+      "tier": "approved",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "INTERIOR RENOVATIONS NEW KITCHEN, NEW BATHROOM, NEW MECHANICAL AND UPGRADED LIGHTING, EXTERIOR REPAIRS RE ROOF, RE STUCCO (SAME COLOR), PAINT WOOD WINDOWS (SAME COLOR), HAVE HISTORIC DIV APPROVAL LETTER NO WINDOW OR EXTERIOR DOOR CHANGES OR ADDITIONS, NO ADDED SQUARE FOOTAGE, NO CHANGE IN PARAPET HE",
+      "contact_match": false
+    },
+    {
+      "permit_id": "b80ebc13-f799-4033-b6cd-f4c18d13e2ff",
+      "permit_number": "2024-38433-BLDC",
+      "permit_type": "Other Remodel with Exterior Changes to Commercial Building",
+      "work_class": "Other Remodel with Exterior Changes",
+      "status": "Issued",
+      "address": "123 GRANT AVE \r\nSanta Fe, NM 87501",
+      "project_name": null,
+      "apply_date": "2024-09-19",
+      "issue_date": "2024-11-06",
+      "complete_date": "",
+      "norm_address": "123 GRANT AVE",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:archaeolog",
+      "description_excerpt": "SHORING SYSTEM FOR ARCHAEOLOGICAL EXCAVATION RELATED TO FUTURE CONTSTRUCTION OF A NEW MUSEUM",
+      "contact_match": false
+    },
+    {
+      "permit_id": "09af05cb-4f9d-48b9-9aaa-a00dc5307329",
+      "permit_number": "2022-20604-CERT",
+      "permit_type": "Certificate of Compliance",
+      "work_class": "Certificate of Compliance",
+      "status": "Complete",
+      "address": "2099 CALLE NAVIDAD \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2022-02-15",
+      "issue_date": "2022-02-24",
+      "complete_date": "",
+      "norm_address": "2099 CALLE NAVIDAD",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:preservation",
+      "description_excerpt": "Property Preservation",
+      "contact_match": false
+    },
+    {
+      "permit_id": "b3afe13e-d8f8-4a18-8034-9825dd665bd7",
+      "permit_number": "2021-17946-EXPC",
+      "permit_type": "Commercial Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Complete",
+      "address": "750 N SAINT FRANCIS DR  \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2021-09-14",
+      "issue_date": "2021-09-22",
+      "complete_date": "",
+      "norm_address": "750 N SAINT FRANCIS DR",
+      "tier": "candidate",
+      "matched_fields": "contacts",
+      "reasons": "keyword:heritage",
+      "description_excerpt": "INSTALLATION OF FLAT ROOF SYSTEM",
+      "contact_match": true
+    },
+    {
+      "permit_id": "fffd060d-6e29-4943-8dc0-3b12242afecf",
+      "permit_number": "2021-17437-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Complete",
+      "address": "123  GRANT AVE   \r\nSanta Fe, NM 87501",
+      "project_name": null,
+      "apply_date": "2021-08-17",
+      "issue_date": "",
+      "complete_date": "",
+      "norm_address": "123 GRANT AVE",
+      "tier": "inspection_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,inspection_language",
+      "description_excerpt": "Historic Review",
+      "contact_match": false
+    },
+    {
+      "permit_id": "3ae5ae0a-865b-4ddb-9d32-f233d60f1d05",
+      "permit_number": "2021-17168-CERT",
+      "permit_type": "Certificate of Compliance",
+      "work_class": "Certificate of Compliance",
+      "status": "Complete",
+      "address": "2833  PLAZA VERDE    \r\nSanta Fe, NM 87507",
+      "project_name": null,
+      "apply_date": "2021-08-05",
+      "issue_date": "2021-09-09",
+      "complete_date": "",
+      "norm_address": "2833 PLAZA VERDE",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "Consulting-Historical",
+      "contact_match": false
+    },
+    {
+      "permit_id": "e434d9bf-d93a-4271-8774-1dd7d667328b",
+      "permit_number": "2021-16429-BLDC",
+      "permit_type": "Other Interior Remodel to Commercial Building",
+      "work_class": "Other Interior Remodel",
+      "status": "Complete",
+      "address": "220  SHELBY ST   \r\nSanta Fe, NM 87501",
+      "project_name": null,
+      "apply_date": "2021-06-28",
+      "issue_date": "2021-12-06",
+      "complete_date": "",
+      "norm_address": "220 SHELBY ST",
+      "tier": "not_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,approval_language",
+      "description_excerpt": "NEW WALLS AND DOORS INTERIOR ONLY NO HISTORIC LETTER",
+      "contact_match": false
+    },
+    {
+      "permit_id": "0dc7c763-bd96-4c05-9af1-de2c8dc92aa8",
+      "permit_number": "2021-15420-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "In Review",
+      "address": "800  CALLE RUMOLO    \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2021-05-06",
+      "issue_date": "",
+      "complete_date": "",
+      "norm_address": "800 CALLE RUMOLO",
+      "tier": "inspection_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,inspection_language",
+      "description_excerpt": "Historic inspection report",
+      "contact_match": false
+    },
+    {
+      "permit_id": "54ce0cfc-4b15-413d-bb8d-daac1d14060a",
+      "permit_number": "2021-15351-IESI",
+      "permit_type": "Special Inspections",
+      "work_class": "Special Inspections",
+      "status": "Submitted",
+      "address": "459  CAMINO MANZANO    \r\nSanta Fe, NM 87505",
+      "project_name": null,
+      "apply_date": "2021-05-03",
+      "issue_date": "",
+      "complete_date": "",
+      "norm_address": "459 CAMINO MANZANO",
+      "tier": "inspection_required",
+      "matched_fields": "description",
+      "reasons": "keyword:historic,inspection_language",
+      "description_excerpt": "Historic Demo Report",
+      "contact_match": false
+    },
+    {
+      "permit_id": "dff426c1-a1c7-479c-a199-e8d3ac267fe9",
+      "permit_number": "2021-13779-EXPC",
+      "permit_type": "Commercial Express- Re-roof",
+      "work_class": "Re-roof",
+      "status": "Expired",
+      "address": "324  PASEO DE PERALTA   \r\nSanta Fe, New Mexico 87501",
+      "project_name": null,
+      "apply_date": "2021-02-10",
+      "issue_date": "2021-02-19",
+      "complete_date": "",
+      "norm_address": "324 PASEO DE PERALTA",
+      "tier": "candidate",
+      "matched_fields": "description",
+      "reasons": "keyword:historic",
+      "description_excerpt": "Tear off existing roof Install Tapered Insulation for proper drainage Replace canales with new TPO lined canales. Historic states that the canales need to be painted to match the stucco .60 mil TPO Roof System",
+      "contact_match": false
+    }
+  ]
+}

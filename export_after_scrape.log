@@ -1,0 +1,12 @@
+Exporting data to /Users/admin/LandUseInspections/scraper/../public/data
+  summary.json (obj)
+  permits.json (12584)
+  permit_categories.json (obj)
+  permits_timeline.json (96)
+  builders.json (50)
+  permit_contacts.json (obj)
+  inspection_status.json (8)
+  inspection_timeline.json (61)
+  fees_summary.json (30)
+  permit_types.json (72)
+Done.

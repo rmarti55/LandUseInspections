@@ -1,0 +1,97 @@
+{
+  "active_historic_permits_probed": 38,
+  "still_require_historic": 4,
+  "historic_already_complete": 34,
+  "still_required_detail": [
+    {
+      "permit_number": "2025-42268-ADDR",
+      "permit_type": "Building (Residential) Additions - Addition",
+      "status": "Issued",
+      "address": "806 BACA ST   Santa Fe, NM 87505",
+      "pending_inspection": "Historic Final",
+      "parent_status": "Requested",
+      "all_pending": [
+        "Building CMU Wall",
+        "Building Drywall, Wallboard",
+        "Historic Final",
+        "Building Final"
+      ]
+    },
+    {
+      "permit_number": "2025-44095-EXPR",
+      "permit_type": "Residential Express- Re-roof",
+      "status": "Issued",
+      "address": "1150  CAMINO CACTO     Santa Fe, New Mexico 87505",
+      "pending_inspection": "Historic Final",
+      "parent_status": "Requested",
+      "all_pending": [
+        "Building, Exterior Lath",
+        "Building, Exterior Sheathing/Roof Deck ",
+        "Historic Final",
+        "Building Final"
+      ]
+    },
+    {
+      "permit_number": "2024-39746-ADDR",
+      "permit_type": "Building (Residential) Additions - Addition",
+      "status": "Issued",
+      "address": "1122 OLD SANTA FE TRL   Santa Fe, NM 87505",
+      "pending_inspection": "Historic Final",
+      "parent_status": "Requested",
+      "all_pending": [
+        "Grading and Drainage Interim",
+        "Grading and Drainage Final",
+        "Historic Final",
+        "Building Final"
+      ]
+    },
+    {
+      "permit_number": "2025-42222-ADDR",
+      "permit_type": "Building (Residential) Additions - Addition",
+      "status": "Issued",
+      "address": "312 PINO RD   Santa Fe, NM 87505",
+      "pending_inspection": "Historic Final",
+      "parent_status": "Requested",
+      "all_pending": [
+        "Historic Final",
+        "Building Final"
+      ]
+    }
+  ],
+  "already_complete_permits": [
+    "2025-44261-EXTR",
+    "2025-44718-EXPR",
+    "2025-42876-EXPR",
+    "2024-35405-BLDC",
+    "2020-7904-BLDC",
+    "2025-43867-BLDC",
+    "2023-32037-BLDC",
+    "2025-43595-EXPR",
+    "BLDR-2018-2200-0-0-0",
+    "2025-41454-BLDC",
+    "2026-48150-TRDR",
+    "2024-37837-SOLC",
+    "2025-40572-BLDC",
+    "2023-31072-BLDC",
+    "2025-44109-EXPR",
+    "2025-42777-ADDR",
+    "2025-41836-BLDC",
+    "2022-22870-BLDR",
+    "2025-45954-IESI",
+    "2022-24964-BLDC",
+    "2024-36228-EXTR",
+    "2025-42450-ADDR",
+    "2025-43950-EXPR",
+    "2025-43986-EXPR",
+    "2023-28701-ADDR",
+    "2025-46470-EXPR",
+    "2025-44173-IESI",
+    "2025-44660-EXPR",
+    "2024-39357-INTR",
+    "2025-42289-EXPR",
+    "2025-40440-ADDR",
+    "2024-37434-EXPC",
+    "2025-47413-WALR",
+    "2025-46471-EXPR"
+  ]
+}
