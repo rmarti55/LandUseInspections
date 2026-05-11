@@ -16,7 +16,12 @@ import {
   yearFillColor,
   yearFillNeutral,
 } from "../lib/permitCategory";
-import type { Permit, GisLayerMeta, GisGeoJson } from "../types";
+import {
+  maxEffectiveYearInCategory,
+  maxEffectiveYearWhere,
+} from "../lib/permitAddressGroup";
+import { isCertificateOfCompliance } from "../lib/permitKind";
+import type { Permit, GisLayerMeta, GisGeoJson, PermitAddressGroup } from "../types";
 import type { Layer, PathOptions } from "leaflet";
 import { useEffect } from "react";
 
@@ -28,9 +33,9 @@ export interface GisLayerData {
 }
 
 export type LeafletMapProps = {
-  residential: Permit[];
-  commercial: Permit[];
-  certificates: Permit[];
+  residential: PermitAddressGroup[];
+  commercial: PermitAddressGroup[];
+  certificates: PermitAddressGroup[];
   colorScaleMin: number;
   colorScaleMax: number;
   cocOnly: boolean;
@@ -41,32 +46,137 @@ export type LeafletMapProps = {
 const fmt = (n: number | null) =>
   n ? `$${n.toLocaleString()}` : "N/A";
 
-function LandUseMarkers({
-  permits,
+function PermitBlockLandUse({ p }: { p: Permit }) {
+  const eff = getEffectiveYear(p);
+  return (
+    <div className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+      <div className="font-bold">{p.permit_number}</div>
+      <div>{p.permit_type}</div>
+      <div className="text-gray-600 whitespace-pre-line text-xs">{p.address}</div>
+      {eff ? (
+        <div>
+          Year:{" "}
+          <span className="font-medium">
+            {eff.year} ({eff.source === "issue_date" ? "issued" : "applied"})
+          </span>
+        </div>
+      ) : null}
+      <div>
+        Status: <span className="font-medium">{p.status}</span>
+      </div>
+      <div>Valuation: {fmt(p.valuation)}</div>
+      {p.square_feet ? (
+        <div>{p.square_feet.toLocaleString()} sq ft</div>
+      ) : null}
+    </div>
+  );
+}
+
+function PermitBlockCoc({ p }: { p: Permit }) {
+  return (
+    <div className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+      <div className="font-bold">{p.permit_number}</div>
+      {p.description?.trim() ? (
+        <div className="font-medium text-gray-900">{p.description.trim()}</div>
+      ) : null}
+      <div>{p.permit_type}</div>
+      <div className="text-gray-600 whitespace-pre-line text-xs">{p.address}</div>
+      <div>
+        Status: <span className="font-medium">{p.status}</span>
+      </div>
+    </div>
+  );
+}
+
+function PermitBlockCertificate({ p }: { p: Permit }) {
+  const eff = getEffectiveYear(p);
+  return (
+    <div className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+      <div className="font-bold">{p.permit_number}</div>
+      <div>{p.permit_type}</div>
+      <div className="text-gray-600 whitespace-pre-line text-xs">{p.address}</div>
+      {p.description ? (
+        <div className="text-gray-700 text-xs">{p.description}</div>
+      ) : null}
+      {eff ? (
+        <div>
+          Year:{" "}
+          <span className="font-medium">
+            {eff.year} ({eff.source === "issue_date" ? "issued" : "applied"})
+          </span>
+        </div>
+      ) : null}
+      <div>
+        Status: <span className="font-medium">{p.status}</span>
+      </div>
+      <div>Valuation: {fmt(p.valuation)}</div>
+    </div>
+  );
+}
+
+function AddressGroupPopupLandUse({ group }: { group: PermitAddressGroup }) {
+  return (
+    <div className="text-sm space-y-2 max-h-60 overflow-y-auto pr-1">
+      <div className="font-semibold text-gray-900 sticky top-0 bg-white pb-1 border-b border-gray-100">
+        {group.permits.length} permit{group.permits.length === 1 ? "" : "s"} ·{" "}
+        {group.displayAddress}
+      </div>
+      {group.permits.map((p) => (
+        <PermitBlockLandUse key={p.permit_id} p={p} />
+      ))}
+    </div>
+  );
+}
+
+function AddressGroupPopupCoc({ group }: { group: PermitAddressGroup }) {
+  return (
+    <div className="text-sm space-y-2 max-h-60 overflow-y-auto pr-1">
+      <div className="font-semibold text-gray-900 sticky top-0 bg-white pb-1 border-b border-gray-100">
+        {group.permits.length} permit{group.permits.length === 1 ? "" : "s"} ·{" "}
+        {group.displayAddress}
+      </div>
+      {group.permits.map((p) => (
+        <PermitBlockCoc key={p.permit_id} p={p} />
+      ))}
+    </div>
+  );
+}
+
+function AddressGroupPopupCertificates({ group }: { group: PermitAddressGroup }) {
+  return (
+    <div className="text-sm space-y-2 max-h-60 overflow-y-auto pr-1">
+      <div className="font-semibold text-gray-900 sticky top-0 bg-white pb-1 border-b border-gray-100">
+        {group.permits.length} certificate
+        {group.permits.length === 1 ? "" : "s"} · {group.displayAddress}
+      </div>
+      {group.permits.map((p) => (
+        <PermitBlockCertificate key={p.permit_id} p={p} />
+      ))}
+    </div>
+  );
+}
+
+function LandUseAddressGroups({
+  groups,
   category,
   colorScaleMin,
   colorScaleMax,
 }: {
-  permits: Permit[];
+  groups: PermitAddressGroup[];
   category: "residential" | "commercial";
   colorScaleMin: number;
   colorScaleMax: number;
 }) {
   return (
     <>
-      {permits.map((p) => {
-        const eff = getEffectiveYear(p);
-        if (!eff) return null;
-        const fill = yearFillColor(
-          eff.year,
-          colorScaleMin,
-          colorScaleMax,
-          category,
-        );
+      {groups.map((g) => {
+        const y =
+          maxEffectiveYearInCategory(g.permits, category) ?? colorScaleMin;
+        const fill = yearFillColor(y, colorScaleMin, colorScaleMax, category);
         return (
           <CircleMarker
-            key={p.permit_id}
-            center={[p.latitude!, p.longitude!]}
+            key={`${g.id}-${category}`}
+            center={[g.latitude, g.longitude]}
             radius={6}
             pathOptions={{
               color: "#1f2937",
@@ -76,25 +186,7 @@ function LandUseMarkers({
             }}
           >
             <Popup>
-              <div className="text-sm space-y-1">
-                <div className="font-bold">{p.permit_number}</div>
-                <div>{p.permit_type}</div>
-                <div className="text-gray-600">{p.address}</div>
-                <div>
-                  Year:{" "}
-                  <span className="font-medium">
-                    {eff.year} (
-                    {eff.source === "issue_date" ? "issued" : "applied"})
-                  </span>
-                </div>
-                <div>
-                  Status: <span className="font-medium">{p.status}</span>
-                </div>
-                <div>Valuation: {fmt(p.valuation)}</div>
-                {p.square_feet ? (
-                  <div>{p.square_feet.toLocaleString()} sq ft</div>
-                ) : null}
-              </div>
+              <AddressGroupPopupLandUse group={g} />
             </Popup>
           </CircleMarker>
         );
@@ -105,13 +197,13 @@ function LandUseMarkers({
 
 const COC_MARKER = "#0d9488";
 
-function CocOnlyMarkers({ permits }: { permits: Permit[] }) {
+function CocOnlyAddressGroups({ groups }: { groups: PermitAddressGroup[] }) {
   return (
     <>
-      {permits.map((p) => (
+      {groups.map((g) => (
         <CircleMarker
-          key={p.permit_id}
-          center={[p.latitude!, p.longitude!]}
+          key={g.id}
+          center={[g.latitude, g.longitude]}
           radius={7}
           pathOptions={{
             color: COC_MARKER,
@@ -121,21 +213,7 @@ function CocOnlyMarkers({ permits }: { permits: Permit[] }) {
           }}
         >
           <Popup>
-            <div className="text-sm space-y-1">
-              <div className="font-bold">{p.permit_number}</div>
-              {p.description?.trim() ? (
-                <div className="font-medium text-gray-900">
-                  {p.description.trim()}
-                </div>
-              ) : null}
-              <div>{p.permit_type}</div>
-              <div className="text-gray-600 whitespace-pre-line">
-                {p.address}
-              </div>
-              <div>
-                Status: <span className="font-medium">{p.status}</span>
-              </div>
-            </div>
+            <AddressGroupPopupCoc group={g} />
           </Popup>
         </CircleMarker>
       ))}
@@ -143,25 +221,26 @@ function CocOnlyMarkers({ permits }: { permits: Permit[] }) {
   );
 }
 
-function CertificateMarkers({
-  permits,
+function CertificateAddressGroups({
+  groups,
   colorScaleMin,
   colorScaleMax,
 }: {
-  permits: Permit[];
+  groups: PermitAddressGroup[];
   colorScaleMin: number;
   colorScaleMax: number;
 }) {
   return (
     <>
-      {permits.map((p) => {
-        const eff = getEffectiveYear(p);
-        if (!eff) return null;
-        const fill = yearFillNeutral(eff.year, colorScaleMin, colorScaleMax);
+      {groups.map((g) => {
+        const y =
+          maxEffectiveYearWhere(g.permits, isCertificateOfCompliance) ??
+          colorScaleMin;
+        const fill = yearFillNeutral(y, colorScaleMin, colorScaleMax);
         return (
           <CircleMarker
-            key={p.permit_id}
-            center={[p.latitude!, p.longitude!]}
+            key={`${g.id}-cert`}
+            center={[g.latitude, g.longitude]}
             radius={6}
             pathOptions={{
               color: "#334155",
@@ -171,25 +250,7 @@ function CertificateMarkers({
             }}
           >
             <Popup>
-              <div className="text-sm space-y-1">
-                <div className="font-bold">{p.permit_number}</div>
-                <div>{p.permit_type}</div>
-                <div className="text-gray-600">{p.address}</div>
-                {p.description ? (
-                  <div className="text-gray-700">{p.description}</div>
-                ) : null}
-                <div>
-                  Year:{" "}
-                  <span className="font-medium">
-                    {eff.year} (
-                    {eff.source === "issue_date" ? "issued" : "applied"})
-                  </span>
-                </div>
-                <div>
-                  Status: <span className="font-medium">{p.status}</span>
-                </div>
-                <div>Valuation: {fmt(p.valuation)}</div>
-              </div>
+              <AddressGroupPopupCertificates group={g} />
             </Popup>
           </CircleMarker>
         );
@@ -198,13 +259,20 @@ function CertificateMarkers({
   );
 }
 
-function FitCityBounds({ bounds }: { bounds: { south: number; west: number; north: number; east: number } }) {
+function FitCityBounds({
+  bounds,
+}: {
+  bounds: { south: number; west: number; north: number; east: number };
+}) {
   const map = useMap();
   useEffect(() => {
-    map.fitBounds([
-      [bounds.south, bounds.west],
-      [bounds.north, bounds.east],
-    ], { padding: [20, 20] });
+    map.fitBounds(
+      [
+        [bounds.south, bounds.west],
+        [bounds.north, bounds.east],
+      ],
+      { padding: [20, 20] }
+    );
   }, [map, bounds]);
   return null;
 }
@@ -235,7 +303,7 @@ function gisOnEachFeature(meta: GisLayerMeta) {
     if (!feature.properties) return;
     const label = feature.properties[meta.displayField];
     if (label) {
-      (layer as any).bindPopup(
+      (layer as unknown as { bindPopup: (html: string) => void }).bindPopup(
         `<div class="text-sm"><strong>${meta.name}</strong><br/>${label}</div>`
       );
     }
@@ -287,8 +355,8 @@ export default function LeafletMap({
           <>
             <LayersControl.Overlay checked name="Residential">
               <LayerGroup>
-                <LandUseMarkers
-                  permits={residential}
+                <LandUseAddressGroups
+                  groups={residential}
                   category="residential"
                   colorScaleMin={colorScaleMin}
                   colorScaleMax={colorScaleMax}
@@ -297,8 +365,8 @@ export default function LeafletMap({
             </LayersControl.Overlay>
             <LayersControl.Overlay checked name="Commercial">
               <LayerGroup>
-                <LandUseMarkers
-                  permits={commercial}
+                <LandUseAddressGroups
+                  groups={commercial}
                   category="commercial"
                   colorScaleMin={colorScaleMin}
                   colorScaleMax={colorScaleMax}
@@ -318,10 +386,10 @@ export default function LeafletMap({
           >
             <LayerGroup>
               {cocOnly ? (
-                <CocOnlyMarkers permits={certificates} />
+                <CocOnlyAddressGroups groups={certificates} />
               ) : (
-                <CertificateMarkers
-                  permits={certificates}
+                <CertificateAddressGroups
+                  groups={certificates}
                   colorScaleMin={colorScaleMin}
                   colorScaleMax={colorScaleMax}
                 />

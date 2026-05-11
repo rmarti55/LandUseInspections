@@ -12,12 +12,10 @@ import {
   Legend,
 } from "recharts";
 import type { Project } from "../types";
+import { BUILDING_SUFFIXES, OTHER_SUFFIXES } from "../lib/permitAddressGroup";
 
 type FilterMode = "all" | "historic" | "non-historic";
 type SuffixBucket = "building" | "other";
-
-const BUILDING_SUFFIXES = new Set(["BLDR", "BLDC", "ADDR"]);
-const OTHER_SUFFIXES = new Set(["EXPR", "EXTR", "EXPC", "WALR", "INTR", "WALC", "MFHM", "FDDS"]);
 
 function normalizeISODay(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -159,6 +157,8 @@ export default function HistoricProjects({ projects }: { projects: Project[] }) 
       nonHistOpenAvgAge: nonHistOpenAges.length
         ? Math.round(nonHistOpenAges.reduce((a, b) => a + b, 0) / nonHistOpenAges.length)
         : 0,
+      histOpenMedianAge: median(histOpenAges),
+      nonHistOpenMedianAge: median(nonHistOpenAges),
     };
   }, [bucketProjects, historic, nonHistoric]);
 
@@ -343,37 +343,51 @@ export default function HistoricProjects({ projects }: { projects: Project[] }) 
       </div>
 
       {/* Open Projects Comparison */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="card">
-          <h3 className="text-base font-semibold text-amber-800 mb-3">
-            Historic — Open Projects
-          </h3>
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-amber-700">{stats.histOpenCount}</p>
-              <p className="text-xs text-gray-500">Open ({stats.histOpenPct}%)</p>
+      <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="card">
+            <h3 className="text-base font-semibold text-amber-800 mb-3">
+              Historic — Open Projects
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-bold text-amber-700">{stats.histOpenCount}</p>
+                <p className="text-xs text-gray-500">Open ({stats.histOpenPct}%)</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-amber-700">{stats.histOpenAvgAge}d</p>
+                <p className="text-xs text-gray-500">Avg age</p>
+                <p className="text-lg font-semibold text-amber-800">{stats.histOpenMedianAge}d</p>
+                <p className="text-xs text-gray-500">Median age</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-amber-700">{stats.histOpenAvgAge}d</p>
-              <p className="text-xs text-gray-500">Avg Age (days open)</p>
+          </div>
+          <div className="card">
+            <h3 className="text-base font-semibold text-gray-700 mb-3">
+              Non-Historic — Open Projects
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-bold text-gray-700">{stats.nonHistOpenCount}</p>
+                <p className="text-xs text-gray-500">Open ({stats.nonHistOpenPct}%)</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-2xl font-bold text-gray-700">{stats.nonHistOpenAvgAge}d</p>
+                <p className="text-xs text-gray-500">Avg age</p>
+                <p className="text-lg font-semibold text-gray-800">{stats.nonHistOpenMedianAge}d</p>
+                <p className="text-xs text-gray-500">Median age</p>
+              </div>
             </div>
           </div>
         </div>
-        <div className="card">
-          <h3 className="text-base font-semibold text-gray-700 mb-3">
-            Non-Historic — Open Projects
-          </h3>
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-gray-700">{stats.nonHistOpenCount}</p>
-              <p className="text-xs text-gray-500">Open ({stats.nonHistOpenPct}%)</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-700">{stats.nonHistOpenAvgAge}d</p>
-              <p className="text-xs text-gray-500">Avg Age (days open)</p>
-            </div>
-          </div>
-        </div>
+        <p className="text-xs text-gray-500 leading-relaxed max-w-3xl">
+          <span className="font-medium text-gray-600">Open</span> means no Historic Final (historic)
+          or Building Final (non-historic) passed inspection is recorded for any permit at this
+          address. <span className="font-medium text-gray-600">Age</span> is days since the{" "}
+          <em>earliest</em> construction permit issue date at that address. Large values often
+          reflect stale permits or missing finals in the source data, not a typical active
+          construction timeline.
+        </p>
       </div>
 
       {/* Projects Table */}

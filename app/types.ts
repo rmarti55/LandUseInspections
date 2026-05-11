@@ -30,6 +30,15 @@ export interface Contact {
 
 export type PermitContacts = Record<string, Contact[]>;
 
+/** Geocoded permits aggregated by normalized address / parcel for map pins. */
+export interface PermitAddressGroup {
+  id: string;
+  displayAddress: string;
+  latitude: number;
+  longitude: number;
+  permits: Permit[];
+}
+
 export interface Permit {
   permit_id: string;
   permit_number: string;

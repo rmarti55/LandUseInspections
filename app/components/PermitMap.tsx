@@ -8,7 +8,8 @@ import {
   landUseYearExtent,
 } from "../lib/permitCategory";
 import { isCertificateOfCompliance } from "../lib/permitKind";
-import type { Permit, GisManifest, GisGeoJson } from "../types";
+import { buildPermitAddressGroups, BUILDING_SUFFIXES, getPermitSuffix } from "../lib/permitAddressGroup";
+import type { Permit, GisManifest, GisGeoJson, PermitAddressGroup } from "../types";
 import CocFilterToggle from "./CocFilterToggle";
 import CocBreakdown from "./CocBreakdown";
 import type { LeafletMapProps, GisLayerData } from "./LeafletMap";
@@ -135,8 +136,9 @@ function ColorLegend({
         </div>
       </div>
       <div className="self-end text-gray-500 max-w-xs">
-        Marker outline is neutral; fill encodes issue year (or apply date if not
-        issued). Use the layer checkboxes on the map to show or hide each group.
+        One pin per street address (or parcel). Open a pin to see every permit
+        at that location in the current filters. Layer toggles show/hide pins
+        that include that category; fill encodes issue or apply year.
       </div>
     </div>
   );
@@ -160,6 +162,7 @@ export default function PermitMap({
   cocOnly: boolean;
   onCocOnlyChange: (value: boolean) => void;
 }) {
+  const [buildingOnly, setBuildingOnly] = useState(true);
   const [MapComponent, setMapComponent] = useState<React.ComponentType<
     LeafletMapProps
   > | null>(null);
@@ -210,33 +213,64 @@ export default function PermitMap({
     setYearThrough(maxYear);
   }, [minYear, maxYear]);
 
-  const { residential, commercial, certificates, visibleCount } =
-    useMemo(() => {
-      const res: Permit[] = [];
-      const com: Permit[] = [];
-      const cert: Permit[] = [];
+  const yearFilteredMapped = useMemo(() => {
+    const out: Permit[] = [];
+    for (const p of mapped) {
+      const eff = getEffectiveYear(p);
+      if (!eff || eff.year < yearFrom || eff.year > yearThrough) continue;
+      out.push(p);
+    }
+    return out;
+  }, [mapped, yearFrom, yearThrough]);
 
-      for (const p of mapped) {
-        const eff = getEffectiveYear(p);
-        if (!eff || eff.year < yearFrom || eff.year > yearThrough) continue;
+  const { residential, commercial, certificates, visibleCount } = useMemo(() => {
+    const allGroups = buildPermitAddressGroups(yearFilteredMapped);
 
-        if (cocOnly) {
-          if (isCertificateOfCompliance(p)) cert.push(p);
-          continue;
-        }
-
-        const cat = classifyPermitLandUse(p);
-        if (cat === "residential") res.push(p);
-        else if (cat === "commercial") com.push(p);
-      }
-
+    if (cocOnly) {
+      const certGroups = allGroups.filter((g) =>
+        g.permits.some(isCertificateOfCompliance)
+      );
       return {
-        residential: res,
-        commercial: com,
-        certificates: cert,
-        visibleCount: cocOnly ? cert.length : res.length + com.length,
+        residential: [] as PermitAddressGroup[],
+        commercial: [] as PermitAddressGroup[],
+        certificates: certGroups,
+        visibleCount: certGroups.length,
       };
-    }, [mapped, yearFrom, yearThrough, cocOnly]);
+    }
+
+    const filtered = buildingOnly
+      ? allGroups.filter((g) =>
+          g.permits.some((p) => {
+            const s = getPermitSuffix(p);
+            return s != null && BUILDING_SUFFIXES.has(s);
+          })
+        )
+      : allGroups;
+
+    const residential = filtered.filter((g) =>
+      g.permits.some((p) => classifyPermitLandUse(p) === "residential")
+    );
+    const commercial = filtered.filter((g) =>
+      g.permits.some((p) => classifyPermitLandUse(p) === "commercial")
+    );
+    const certificates = filtered.filter((g) =>
+      g.permits.some((p) => isCertificateOfCompliance(p))
+    );
+
+    const landUsePins = filtered.filter((g) =>
+      g.permits.some((p) => {
+        const c = classifyPermitLandUse(p);
+        return c === "residential" || c === "commercial";
+      })
+    );
+
+    return {
+      residential,
+      commercial,
+      certificates,
+      visibleCount: landUsePins.length,
+    };
+  }, [yearFilteredMapped, cocOnly, buildingOnly]);
 
   const geocodedLandUseWithYear = useMemo(() => {
     let n = 0;
@@ -293,12 +327,23 @@ export default function PermitMap({
     <div className="space-y-6">
       <div className="card">
         <h2 className="text-lg font-semibold mb-1">Permit map</h2>
-        <div className="mb-4">
+        <div className="mb-4 flex flex-wrap items-center gap-4">
           <CocFilterToggle
             id="map-coc-filter"
             cocOnly={cocOnly}
             onCocOnlyChange={onCocOnlyChange}
           />
+          {!cocOnly && (
+            <label className="inline-flex items-center gap-2 text-sm cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={buildingOnly}
+                onChange={(e) => setBuildingOnly(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              <span className="text-gray-700">Building permits only</span>
+            </label>
+          )}
         </div>
 
         {cocOnly ? (
@@ -309,10 +354,10 @@ export default function PermitMap({
           </p>
         ) : (
           <p className="text-sm text-gray-600 mb-2">
-            Only permits with coordinates appear here. After geocoding your
-            export, refresh to load points. Certificates, grading, and other
-            non-building types are omitted from the residential and commercial
-            layers (map top-right).
+            Pins are grouped by street address (or parcel).
+            {buildingOnly
+              ? " Showing only locations with building/construction permits (new builds, additions, remodels) — trade permits and minor work are excluded."
+              : " Showing all permit types including trade, electrical, plumbing, etc."}
           </p>
         )}
 
@@ -333,7 +378,8 @@ export default function PermitMap({
           )}
           {" · "}
           <span className="text-gray-700 font-medium">
-            {visibleCount.toLocaleString()} shown
+            {visibleCount.toLocaleString()} location
+            {visibleCount === 1 ? "" : "s"} shown
           </span>{" "}
           in range {yearFrom}–{yearThrough}
         </p>

@@ -57,6 +57,66 @@ class EnerGovClient:
         return r.json()
 
 
+def _http_status_from_exc(exc: BaseException) -> int | None:
+    resp = getattr(exc, "response", None)
+    if resp is not None:
+        return int(getattr(resp, "status_code", None) or 0) or None
+    return None
+
+
+def _is_transient_http_error(exc: BaseException) -> bool:
+    if isinstance(exc, (requests.exceptions.Timeout, requests.exceptions.ConnectionError)):
+        return True
+    st = _http_status_from_exc(exc)
+    return st in (429, 502, 503, 504)
+
+
+def _record_enrichment_failure(
+    conn: sqlite3.Connection,
+    entity_id: str,
+    kind: str,
+    exc: BaseException,
+) -> None:
+    msg = str(exc)[:2000]
+    status = _http_status_from_exc(exc)
+    try:
+        conn.execute(
+            """
+            INSERT INTO enrichment_failures
+            (entity_id, enrichment_kind, error_message, http_status)
+            VALUES (?, ?, ?, ?)
+            """,
+            (entity_id, kind, msg, status),
+        )
+    except sqlite3.OperationalError:
+        log.warning(
+            "Could not record enrichment failure (run migrate_db): %s", exc
+        )
+
+
+def _fetch_permit_detail(client: EnerGovClient, permit_id: str) -> Any:
+    """GET permit JSON with retries on transient network / gateway errors."""
+    last_exc: BaseException | None = None
+    for attempt in range(3):
+        try:
+            return client.get("permit_detail", permit_id)
+        except requests.exceptions.RequestException as e:
+            last_exc = e
+            if not _is_transient_http_error(e) or attempt >= 2:
+                raise
+            delay = 2**attempt
+            log.warning(
+                "Transient error permit %s attempt %d: %s; sleeping %ds",
+                permit_id,
+                attempt + 1,
+                e,
+                delay,
+            )
+            time.sleep(delay)
+    assert last_exc is not None
+    raise last_exc
+
+
 # ──────────────────────────────────────────────────────────────────
 # Inspection scraper (the primary data source)
 # ──────────────────────────────────────────────────────────────────
@@ -194,6 +254,9 @@ def enrich_permits(
     conn: sqlite3.Connection,
     limit: int = 0,
     resume: bool = False,
+    *,
+    no_delay: bool = False,
+    orphans_only: bool = False,
 ) -> int:
     """GET full permit details for every Permit entity discovered."""
     pairs = _collect_entity_ids(conn)
@@ -205,37 +268,51 @@ def enrich_permits(
         if pid not in seen:
             seen.add(pid)
             unique.append(pid)
-    if limit:
-        unique = unique[:limit]
 
-    existing: set[str] = set()
-    if resume:
-        rows = conn.execute("SELECT permit_id FROM permits").fetchall()
-        existing = {r["permit_id"] for r in rows if r["permit_id"]}
+    rows = conn.execute("SELECT permit_id FROM permits").fetchall()
+    existing = {r["permit_id"] for r in rows if r["permit_id"]}
+
+    if orphans_only:
+        unique = [p for p in unique if p not in existing]
+        log.info("  Orphans-only: %d permit EntityIDs missing from DB", len(unique))
+    elif resume:
         skipped = sum(1 for p in unique if p in existing)
         if skipped:
             log.info("  Resume: skipping %d permits already in DB", skipped)
+
+    if limit:
+        unique = unique[:limit]
 
     log.info("─── Enriching %d permits ───", len(unique))
     stored = 0
     skipped_count = 0
     for i, pid in enumerate(unique, 1):
-        if i % 50 == 0:
+        if i % 50 == 0 or i == len(unique):
             log.info("  %d / %d …", i, len(unique))
-        if resume and pid in existing:
+        if not orphans_only and resume and pid in existing:
             skipped_count += 1
             continue
         try:
-            resp = client.get("permit_detail", pid)
+            resp = _fetch_permit_detail(client, pid)
             result = resp.get("Result") or {}
             if result.get("PermitNumber"):
                 _store_permit(conn, result)
                 stored += 1
-        except Exception:
-            pass
+            else:
+                _record_enrichment_failure(
+                    conn,
+                    pid,
+                    "permit_detail",
+                    ValueError("API response missing PermitNumber in Result"),
+                )
+                log.warning("Permit %s: no PermitNumber in response", pid)
+        except Exception as exc:
+            log.warning("Permit enrich failed for %s: %s", pid, exc)
+            _record_enrichment_failure(conn, pid, "permit_detail", exc)
         if i % 20 == 0:
             conn.commit()
-        client.delay()
+        if not no_delay:
+            client.delay()
 
     conn.commit()
     log.info("  Permits stored: %d (resume skipped: %d)", stored, skipped_count)
@@ -403,6 +480,21 @@ def main():
                         help="Skip the permit/sub-record enrichment")
     parser.add_argument("--resume", action="store_true",
                         help="Skip work already recorded (calendar days, permits, enrichment_log)")
+    parser.add_argument(
+        "--no-delay",
+        action="store_true",
+        help="Do not sleep between permit_detail requests (faster; use carefully)",
+    )
+    parser.add_argument(
+        "--orphans-only",
+        action="store_true",
+        help="Only fetch Permit EntityIDs not already in permits table",
+    )
+    parser.add_argument(
+        "--skip-sub-records",
+        action="store_true",
+        help="After permit enrichment, skip Phase 3 (fees/contacts)",
+    )
     args = parser.parse_args()
 
     log.info("=" * 60)
@@ -434,19 +526,30 @@ def main():
         log.info("")
         log.info("Phase 2: Enriching permit details")
         enrich_permits(
-            client, conn, limit=args.enrich_limit, resume=args.resume)
-        client.delay()
+            client,
+            conn,
+            limit=args.enrich_limit,
+            resume=args.resume,
+            no_delay=args.no_delay,
+            orphans_only=args.orphans_only,
+        )
+        if not args.no_delay:
+            client.delay()
 
-        log.info("")
-        log.info("Phase 3: Enriching sub-records (fees, contacts)")
-        enrich_sub_records(
-            client, conn, limit=args.enrich_limit, resume=args.resume)
+        if not args.skip_sub_records:
+            log.info("")
+            log.info("Phase 3: Enriching sub-records (fees, contacts)")
+            enrich_sub_records(
+                client, conn, limit=args.enrich_limit, resume=args.resume)
+        else:
+            log.info("")
+            log.info("Skipping Phase 3 (--skip-sub-records)")
 
     # Summary
     log.info("")
     log.info("=" * 60)
     log.info("SCRAPE COMPLETE")
-    for table in ("inspections", "permits", "fees", "contacts", "scraped_calendar_days", "enrichment_log"):
+    for table in ("inspections", "permits", "fees", "contacts", "scraped_calendar_days", "enrichment_log", "enrichment_failures"):
         count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
         log.info("  %-20s %d records", table, count)
     log.info("=" * 60)

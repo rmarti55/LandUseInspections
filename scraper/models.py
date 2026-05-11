@@ -7,6 +7,7 @@ from config import DB_PATH
 def get_connection(db_path: str = DB_PATH) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout=30000")
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
     return conn
@@ -158,6 +159,17 @@ def init_db(db_path: str = DB_PATH) -> None:
         enriched_at  TEXT DEFAULT (datetime('now')),
         PRIMARY KEY (entity_id, case_module)
     );
+
+    CREATE TABLE IF NOT EXISTS enrichment_failures (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        entity_id        TEXT NOT NULL,
+        enrichment_kind  TEXT NOT NULL,
+        error_message    TEXT,
+        http_status      INTEGER,
+        attempted_at     TEXT DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_enrichment_failures_entity
+        ON enrichment_failures(entity_id);
     """)
 
     conn.commit()
@@ -165,13 +177,25 @@ def init_db(db_path: str = DB_PATH) -> None:
 
 
 def migrate_db(db_path: str = DB_PATH) -> None:
-    """Add columns that may be missing from an older schema."""
+    """Add columns / tables that may be missing from an older schema."""
     conn = get_connection(db_path)
     for col, typ in [("latitude", "REAL"), ("longitude", "REAL")]:
         try:
             conn.execute(f"ALTER TABLE permits ADD COLUMN {col} {typ}")
         except sqlite3.OperationalError:
             pass
+    conn.executescript("""
+    CREATE TABLE IF NOT EXISTS enrichment_failures (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        entity_id        TEXT NOT NULL,
+        enrichment_kind  TEXT NOT NULL,
+        error_message    TEXT,
+        http_status      INTEGER,
+        attempted_at     TEXT DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_enrichment_failures_entity
+        ON enrichment_failures(entity_id);
+    """)
     conn.commit()
     conn.close()
 

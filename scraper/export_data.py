@@ -10,8 +10,10 @@ for backup or ad hoc SQL; the dashboard still loads only these JSON files.
 
 Usage:
     python export_data.py
+    python export_data.py --db path/to/snapshot.db
 """
 
+import argparse
 import json
 import os
 import re
@@ -359,9 +361,19 @@ def write_json(name: str, data):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Export SQLite to dashboard JSON")
+    parser.add_argument(
+        "--db",
+        default=None,
+        help=f"SQLite database path (default: {DB_PATH})",
+    )
+    args = parser.parse_args()
+
     os.makedirs(OUT_DIR, exist_ok=True)
-    conn = get_connection()
+    conn = get_connection(args.db) if args.db else get_connection()
     print("Exporting data to", OUT_DIR)
+    if args.db:
+        print("  source db:", args.db)
 
     write_json("summary", export_summary(conn))
     permits_data = export_permits(conn)

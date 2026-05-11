@@ -10,10 +10,15 @@ Writes:
 
 Layer order (bottom to top): City Limits, Zoning, Historic Districts.
 
+Zoning polygons are nested into sub-groups **one per ZDESC code** so Adobe
+Illustrator shows recognizable layer names in the Layers panel; each path
+includes a <title> with the zone code.
+
 Usage:
     python export_svg.py
 """
 
+from collections import defaultdict
 import json
 import os
 import re
@@ -28,6 +33,25 @@ def _sanitize_id(prefix: str, index: int, raw: object) -> str:
     if not safe:
         safe = str(index)
     return f"{prefix}_{index}_{safe}"
+
+
+def _safe_xml_fragment(s: str) -> str:
+    """Fragment usable inside XML id; ASCII word chars ; no leading digit."""
+    frag = re.sub(r"[^\w\-:.]", "_", str(s))[:100].strip("_")
+    if not frag:
+        frag = "_"
+    if frag[0].isdigit() or not re.match(r"^[A-Za-z_]", frag):
+        frag = "z_" + frag
+    return frag
+
+
+def _path_id_zoning(zcode: str, feat_props: dict, feat_index: int) -> str:
+    zslug = _safe_xml_fragment(zcode)
+    oid = feat_props.get("OBJECTID")
+    oid1 = feat_props.get("OBJECTID_1")
+    uniq = oid if oid is not None else (oid1 if oid1 is not None else feat_index)
+    uniq_s = _safe_xml_fragment(str(uniq))
+    return f"zon_{zslug}_{uniq_s}_i{feat_index}"
 
 
 def _attr_esc(value: object) -> str:
@@ -84,9 +108,10 @@ def main() -> None:
         )
 
         if layer_key == "city_limits":
+            title_txt = "City limits"
             for i, feat in enumerate(feats):
                 pid = _sanitize_id("city_lim", i, feat.get("label") or "outline")
-                label = feat.get("label") or "City limits"
+                label = feat.get("label") or title_txt
                 d = feat["d"]
                 stroke = style.get("color", "#000000")
                 sw = style.get("weight", 2)
@@ -100,59 +125,87 @@ def main() -> None:
                     f'stroke="{_attr_esc(stroke)}" '
                     f'stroke-width="{sw}" '
                     f'stroke-linejoin="round" '
-                    f'stroke-linecap="round"{da_attr}/>'
+                    f'stroke-linecap="round"{da_attr}>'
+                    f"<title>{_attr_esc(title_txt)}</title></path>"
                 )
 
         elif layer_key == "zoning":
             fc = style.get("color", "#6b7280")
             fo = style.get("fillOpacity", 0.12)
             sw = style.get("weight", 1)
+            buckets: dict[str, list[tuple[int, dict]]] = defaultdict(list)
             for i, feat in enumerate(feats):
-                zname = (
-                    feat.get("properties", {}).get("ZDESC")
-                    or feat.get("label")
-                    or f"zone_{i}"
-                )
-                pid = _sanitize_id(
-                    "zoning",
-                    i,
-                    feat.get("properties", {}).get("OBJECTID", zname),
-                )
-                d = feat["d"]
+                props = feat.get("properties") or {}
+                zcode = (props.get("ZDESC") or feat.get("label") or "UNKNOWN").strip()
+                if not zcode:
+                    zcode = "UNKNOWN"
+                buckets[zcode].append((i, feat))
+
+            for zcode in sorted(buckets.keys()):
+                gslug = _safe_xml_fragment(zcode)
+                group_id = f"zoning_grp_{gslug}"
                 chunks.append(
-                    f'<path id="{pid}" '
-                    f'data-label="{_attr_esc(zname)}" '
-                    f'd="{d}" '
-                    f'fill="{_attr_esc(fc)}" '
-                    f'fill-opacity="{fo}" '
-                    f'stroke="{_attr_esc(fc)}" '
-                    f'stroke-width="{sw}" '
-                    f'stroke-linejoin="round"/>'
+                    f'<g id="{group_id}" inkscape:groupmode="layer" '
+                    f'inkscape:label="{_attr_esc(zcode)}">'
                 )
+                for feat_index, feat in buckets[zcode]:
+                    props = feat.get("properties") or {}
+                    pid = _path_id_zoning(zcode, props, feat_index)
+                    d = feat["d"]
+                    chunks.append(
+                        f'<path id="{pid}" '
+                        f'data-label="{_attr_esc(zcode)}" '
+                        f'd="{d}" '
+                        f'fill="{_attr_esc(fc)}" '
+                        f'fill-opacity="{fo}" '
+                        f'stroke="{_attr_esc(fc)}" '
+                        f'stroke-width="{sw}" '
+                        f'stroke-linejoin="round">'
+                        f"<title>{_attr_esc(zcode)}</title></path>"
+                    )
+                chunks.append("</g>")
 
         elif layer_key == "historic_districts":
             palette = style.get("colors") or {}
             sw = style.get("weight", 2)
             fo = style.get("fillOpacity", 0.35)
+            hd_buckets: dict[str, list[tuple[int, dict]]] = defaultdict(list)
             for i, feat in enumerate(feats):
-                pname = (
-                    feat.get("properties", {}).get("HDSTNAM")
-                    or feat.get("label")
-                    or f"district_{i}"
-                )
-                color = palette.get(str(pname), "#6b7280")
-                pid = _sanitize_id("hd", i, pname)
-                d = feat["d"]
+                props = feat.get("properties") or {}
+                name = (props.get("HDSTNAM") or feat.get("label") or "UNKNOWN").strip()
+                if not name:
+                    name = "UNKNOWN"
+                hd_buckets[name].append((i, feat))
+
+            for hname in sorted(hd_buckets.keys()):
+                hslug = _safe_xml_fragment(hname)
+                group_id = f"historic_grp_{hslug}"
                 chunks.append(
-                    f'<path id="{pid}" '
-                    f'data-label="{_attr_esc(pname)}" '
-                    f'd="{d}" '
-                    f'fill="{_attr_esc(color)}" '
-                    f'fill-opacity="{fo}" '
-                    f'stroke="{_attr_esc(color)}" '
-                    f'stroke-width="{sw}" '
-                    f'stroke-linejoin="round"/>'
+                    f'<g id="{group_id}" inkscape:groupmode="layer" '
+                    f'inkscape:label="{_attr_esc(hname)}">'
                 )
+                for feat_index, feat in hd_buckets[hname]:
+                    props = feat.get("properties") or {}
+                    pname = (
+                        props.get("HDSTNAM")
+                        or feat.get("label")
+                        or f"district_{feat_index}"
+                    )
+                    color = palette.get(str(pname), "#6b7280")
+                    pid = _sanitize_id("hd", feat_index, pname)
+                    d = feat["d"]
+                    chunks.append(
+                        f'<path id="{pid}" '
+                        f'data-label="{_attr_esc(pname)}" '
+                        f'd="{d}" '
+                        f'fill="{_attr_esc(color)}" '
+                        f'fill-opacity="{fo}" '
+                        f'stroke="{_attr_esc(color)}" '
+                        f'stroke-width="{sw}" '
+                        f'stroke-linejoin="round">'
+                        f"<title>{_attr_esc(str(pname))}</title></path>"
+                    )
+                chunks.append("</g>")
 
         chunks.append("</g>")
 
@@ -162,11 +215,18 @@ def main() -> None:
     with open(SVG_PATH_OUT, "w", encoding="utf-8") as f:
         f.write("\n".join(chunks))
 
+    feats_z = svg_data["layers"]["zoning"]["features"]
+    z_buckets: dict[str, int] = defaultdict(int)
+    for f in feats_z:
+        p = f.get("properties") or {}
+        zc = (p.get("ZDESC") or f.get("label") or "UNKNOWN").strip() or "UNKNOWN"
+        z_buckets[zc] += 1
+
     print("Wrote", SVG_PATH_OUT)
     print(
         f"  viewBox: {viewbox} · paths: limits="
         f"{len(svg_data['layers']['city_limits']['features'])}, "
-        f"zoning={len(svg_data['layers']['zoning']['features'])}, "
+        f"zoning={len(feats_z)} ({len(z_buckets)} ZDESC sub-layers), "
         f"historic={len(svg_data['layers']['historic_districts']['features'])}"
     )
 
